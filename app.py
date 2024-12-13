@@ -63,62 +63,6 @@ if option == "ATS":
             st.subheader("Response")
             st.write(response)
 
-# elif option == "YT Summarizer":
-#     import google.generativeai as genai
-#     from youtube_transcript_api import YouTubeTranscriptApi
-#     from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
-
-#     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-#     prompt = """You are a YouTube video summarizer. You will take the transcript text
-#     and summarize the entire video, providing the important points within 250 words.
-#     Please provide the summary of the text given here: """
-
-    # def extract_transcript_details(youtube_video_url):
-    #     try:
-    #         video_id = youtube_video_url.split("v=")[1].split("&")[0]
-            # transcript_text = YouTubeTranscriptApi.get_transcript(video_id)
-
-    #         transcript = " ".join([i["text"] for i in transcript_text])
-    #         return transcript
-
-    #     except ConnectionError:
-    #         st.error("Network issue: Unable to connect to YouTube servers. Please try again later.")
-    #     except TranscriptsDisabled:
-    #         st.error("This video does not have transcripts enabled.")
-    #     except NoTranscriptFound:
-    #         st.error("No transcripts available for this video.")
-    #     except Exception as e:
-    #         st.error(f"An unexpected error occurred: {e}")
-    #     return None
-
-    # def generate_gemini_content(transcript_text, prompt):
-    #     try:
-    #         model = genai.GenerativeModel("gemini-pro")
-    #         response = model.generate_content(prompt + transcript_text)
-    #         return response.text
-    #     except Exception as e:
-    #         st.error(f"Error generating summary: {e}")
-    #         return None
-
-    # st.title("YouTube Transcript to Detailed Notes Converter")
-    # youtube_link = st.text_input("Enter YouTube Video Link:")
-
-    # if youtube_link:
-    #     try:
-    #         video_id = youtube_link.split("v=")[1].split("&")[0]
-    #         st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
-    #     except IndexError:
-    #         st.error("Invalid YouTube link. Please ensure it contains 'v=' followed by the video ID.")
-
-    # if st.button("Get Detailed Notes"):
-    #     transcript_text = extract_transcript_details(youtube_link)
-
-    #     if transcript_text:
-    #         summary = generate_gemini_content(transcript_text, prompt)
-    #         if summary:
-    #             st.markdown("## Detailed Notes:")
-    #             st.write(summary)
 
 
 elif option == "Invoice Extractor":
