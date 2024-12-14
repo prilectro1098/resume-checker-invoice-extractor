@@ -1,24 +1,26 @@
 import streamlit as st
 from dotenv import load_dotenv
 import os
+from textblob import TextBlob
+from deep_translator import GoogleTranslator
+from PIL import Image
+import PyPDF2 as pdf
+import google.generativeai as genai
 
-
+# Load environment variables
 load_dotenv()
-
 
 st.set_page_config(page_title="AI Products", page_icon=":robot:", layout="wide")
 
-
+# Sidebar options
 st.sidebar.title("AI Products")
-option = st.sidebar.radio("Choose a Product:", ["ATS", "Invoice Extractor"])
+option = st.sidebar.radio("Choose a Product:", ["ATS", "Invoice Extractor", "Sentiment Analysis"])
 
+# Configure Google API for generative model
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# ATS System
 if option == "ATS":
-    # ATS Code
-    import google.generativeai as genai
-    import PyPDF2 as pdf
-
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
     def get_gemini_response(input):
         model = genai.GenerativeModel("gemini-pro")
         response = model.generate_content(input)
@@ -27,11 +29,9 @@ if option == "ATS":
     def input_pdf_text(uploaded_file):
         reader = pdf.PdfReader(uploaded_file)
         text = ""
-
         for page in range(len(reader.pages)):
             page = reader.pages[page]
             text += str(page.extract_text())
-
         return text
 
     input_prompt = """
@@ -63,15 +63,8 @@ if option == "ATS":
             st.subheader("Response")
             st.write(response)
 
-
-
+# Invoice Extractor
 elif option == "Invoice Extractor":
-    # Invoice Extractor Code
-    from PIL import Image
-    import google.generativeai as genai
-
-    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
     def get_gemini_response(input, image, prompt):
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content([input, image[0], prompt])
@@ -110,3 +103,45 @@ elif option == "Invoice Extractor":
             st.write(response)
         except Exception as e:
             st.error(f"Error: {e}")
+
+# Sentiment Analysis for Multilingual Reviews
+elif option == "Sentiment Analysis":
+    st.title("Multilingual Sentiment Analysis for Reviews")
+
+    def translate_text(text, target_language="en"):
+        try:
+            # Translate the text to the target language (English by default)
+            translated = GoogleTranslator(source="auto", target=target_language).translate(text)
+            return translated
+        except Exception as e:
+            return f"Error translating text: {e}"
+
+    def analyze_sentiment_gemini(text):
+        input_prompt = f"""
+        You are a sentiment analysis expert.
+        Please evaluate the sentiment of the following text:
+        Text: {text}
+        I want the response to be Positive, Negative, or Neutral based on the text's sentiment.
+        """
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content(input_prompt)
+        return response.text.strip()
+
+    st.text("Analyze Reviews in Any Language")
+
+    # Text input for manual review entry
+    review_text = st.text_area("Enter review text for sentiment analysis:")
+
+    submit = st.button("Submit Review")
+
+    if submit and review_text:
+        # Translate text to English for consistent sentiment analysis
+        translated_review = translate_text(review_text)
+
+        st.subheader("Translated Review (if necessary)")
+        st.write(translated_review)
+
+        # Perform sentiment analysis using Google's API
+        sentiment = analyze_sentiment_gemini(translated_review)
+
+        st.subheader(f"Sentiment Analysis Result: {sentiment}")
