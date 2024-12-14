@@ -4,3 +4,7 @@ google-generativeai
 PyPDF2
 youtube-transcript-api
 Pillow
+TextBlob
+Pandas
+deep_translator
+langdetect
